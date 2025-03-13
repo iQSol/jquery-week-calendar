@@ -72,6 +72,7 @@
         readonly: false,
         allowEventCreation: true,
         hourLine: false,
+        markActive: false,
         deletable: function(calEvent, element) {
           return true;
         },
@@ -1013,7 +1014,12 @@
         renderRow = '<tr class=\"wc-grid-row-events\">';
         renderRow += '<td class=\"wc-grid-timeslot-header\">';
         for (var i = start; i < end; i++) {
-          var bhClass = (options.businessHours.start <= i && options.businessHours.end > i) ? 'ui-state-active wc-business-hours' : 'ui-state-default';
+          var bhClass;
+          if (options.markActive === true) {
+            bhClass = (options.businessHours.start <= i && options.businessHours.end > i) ? 'ui-state-active wc-business-hours' : 'ui-state-default';
+          } else {
+            bhClass = (options.businessHours.start <= i && options.businessHours.end > i) ? 'wc-business-hours' : 'ui-state-default';
+          }
           renderRow += '<div class=\"wc-hour-header ' + bhClass + '\">';
           if (options.use24Hour) {
             renderRow += '<div class=\"wc-time-header-cell\">' + self._24HourForIndex(i) + '</div>';
@@ -1295,10 +1301,12 @@
 
           self.element.find('.wc-header td.wc-day-column-header').each(function(i, val) {
             $(this).html(self._getHeaderDate(currentDay));
-            if (self._isToday(currentDay)) {
-                $(this).addClass(todayClass);
-            } else {
-                $(this).removeClass(todayClass);
+            if (options.markActive === true) {
+              if (self._isToday(currentDay)) {
+                  $(this).addClass(todayClass);
+              } else {
+                  $(this).removeClass(todayClass);
+              }
             }
             currentDay = self._addDays(currentDay, 1);
 
@@ -1308,10 +1316,12 @@
           if (showAsSeparatedUser)
           {
             self.element.find('.wc-header td.wc-user-header').each(function(i, val) {
-              if (self._isToday(currentDay)) {
-                  $(this).addClass(todayClass);
-              } else {
-                  $(this).removeClass(todayClass);
+              if (options.markActive === true) {
+                if (self._isToday(currentDay)) {
+                    $(this).addClass(todayClass);
+                } else {
+                    $(this).removeClass(todayClass);
+                }
               }
               currentDay = ((i + 1) % options.users.length) ? currentDay : self._addDays(currentDay, 1);
             });
@@ -1323,14 +1333,16 @@
 
             $(this).data('startDate', self._cloneDate(currentDay));
             $(this).data('endDate', new Date(currentDay.getTime() + (MILLIS_IN_DAY)));
-            if (self._isToday(currentDay)) {
-                $(this).parent()
-                    .addClass(todayClass)
-                    .removeClass('ui-state-default');
-            } else {
-                $(this).parent()
-                    .removeClass(todayClass)
-                    .addClass('ui-state-default');
+            if (options.markActive === true) {
+              if (self._isToday(currentDay)) {
+                  $(this).parent()
+                      .addClass(todayClass)
+                      .removeClass('ui-state-default');
+              } else {
+                  $(this).parent()
+                      .removeClass(todayClass)
+                      .addClass('ui-state-default');
+              }
             }
 
             if (!showAsSeparatedUser || !((i + 1) % options.users.length)) {
