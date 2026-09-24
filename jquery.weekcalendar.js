@@ -82,7 +82,7 @@
         resizable: function(calEvent, element) {
           return true;
         },
-        eventClick: function(calEvent, element, dayFreeBusyManager, 
+        eventClick: function(calEvent, element, dayFreeBusyManager,
                                                       calendar, clickEvent) {
         },
         eventRender: function(calEvent, element) {
@@ -100,14 +100,14 @@
         },
         eventResize: function(calEvent, element) {
         },
-        eventNew: function(calEvent, element, dayFreeBusyManager, 
+        eventNew: function(calEvent, element, dayFreeBusyManager,
                                                     calendar, mouseupEvent) {
         },
         eventMouseover: function(calEvent, $event) {
         },
         eventMouseout: function(calEvent, $event) {
         },
-        eventDelete: function(calEvent, element, dayFreeBusyManager, 
+        eventDelete: function(calEvent, element, dayFreeBusyManager,
                                                       calendar, clickEvent) {
             calendar.weekCalendar('removeEvent',calEvent.id);
 	},
@@ -484,7 +484,11 @@
         var calEvents = [];
 
         self.element.find('.wc-cal-event').each(function() {
-          calEvents.push($(this).data('calEvent'));
+          // a drag released outside the day column leaves its placeholder without an event
+          var calEvent = $(this).data('calEvent');
+          if (calEvent) {
+            calEvents.push(calEvent);
+          }
         });
         return calEvents;
       },
@@ -1343,6 +1347,10 @@
                       .removeClass(todayClass)
                       .addClass('ui-state-default');
               }
+            } else {
+                $(this).parent()
+                    .removeClass(todayClass)
+                    .addClass('ui-state-default');
             }
 
             if (!showAsSeparatedUser || !((i + 1) % options.users.length)) {
